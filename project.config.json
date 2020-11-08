@@ -15,10 +15,10 @@
 		"showShadowRootInWxmlPanel": true,
 		"scopeDataCheck": false
 	},
-	"compileType": "miniprogram",
+	"compileType": "game",
 	"libVersion": "2.14.0",
 	"appid": "wx1d6c94058f61f27e",
-	"projectname": "miniprogram-1",
+	"projectname": "wechat2048",
 	"debugOptions": {
 		"hidedInDevtools": []
 	},
