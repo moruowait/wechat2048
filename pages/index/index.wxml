@@ -1,6 +1,6 @@
 <view class="container">
 	<view class="game-body">
-		<loading hidden="{{hidden}}">加载中...</loading>
+		<loading hidden="{{hideLoading}}">加载中...</loading>
 		<view class="heading">
 			<text class="title">2048</text>
 			<view class="scores-container">
@@ -23,8 +23,8 @@
 			<view class="grid-container" bindtouchstart="touchStart" bindtouchmove="touchMove" bindtouchend="touchEnd">
 				<view wx:for="{{grids}}" wx:for-index="rowIdx" wx:for-item="row" class="grid-row">
 					<view wx:for="{{row}}" wx:for-index="colIdx" wx:for-item="cell" class="grid-cell">
-						<view class="tile tile-{{cell.value}}">
-							<view wx:if="{{cell}}" class="tile-inner">{{cell.value}}</view>
+						<view class="tile tile-{{cell}}">
+							<view wx:if="{{cell}}" class="tile-inner">{{cell}}</view>
 						</view>
 					</view>
 				</view>

@@ -103,6 +103,30 @@ class Board {
         }
         return false
     }
+    isOver() { // 游戏是否结束：可用格子为空且所有格子上下左右值不等
+        // 如果有空余的格子
+        if (this.emptyGrids().length) {
+            return false
+        }
+        // 如果没有空余的格子
+        // 左右不等
+        for (let i = 0; i < this.size; i++) {
+            for (j = 1; j < this.size; j++) {
+                if (this.grids[i][j] == this.grids[i][j - 1]) {
+                    return false
+                }
+            }
+        }
+        // 上下不相等
+        for (let j = 0; j < this.size; j++) {
+            for (let i = 1; i < this.size; i++) {
+                if (this.grids[i][j] == this.grids[i - 1][j]) {
+                    return false
+                }
+            }
+        }
+        return true
+    }
     move(dir) {
         var grid = [[], [], [], []]
         for (var i = 0; i < this.size; i++) {

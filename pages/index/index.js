@@ -1,30 +1,20 @@
-var app = getApp();
+let Board = require("./board.js");
 
-var config = {
+let app = getApp();
+
+let config = {
   data: {
-    hidden: false,
-
-    // 游戏数据可以通过参数控制
-    grids: [],
+    // board: new Object(),
+    hideLoading: true,
+    overMsg: '游戏结束',
     over: false,
-    win: false,
     score: 0,
-    highscore: 0,
-    overMsg: '游戏结束'
+    grids: []
   },
   onLoad: function () {
-    this.setData({
-      highscore: wx.getStorageSync('highscore') || 0
-    });
-
   },
   onReady: function () {
-    var that = this;
-
-    // 页面渲染完毕隐藏loading
-    that.setData({
-      hidden: true
-    });
+    this.gameStart()
   },
   onShow: function () {
     // 页面展示
@@ -35,95 +25,118 @@ var config = {
   onUnload: function () {
     // 页面关闭
   },
-
-  // 更新视图数据
-  updateView: function (data) {
-    // 游戏结束
-    if (data.over) {
-      data.overMsg = '游戏结束';
+  gameOver: function () {  // 游戏结束
+    this.setData({
+      over: true
+    });
+    if (this.data.score >= 16) {
+      this.setData({
+        overMsg: '恭喜达到2048！'
+      });
+      // wx.setStorageSync('highScore', this.data.score);
+    } else if (this.data.score > this.data.bestScore) {
+      this.setData({
+        overMsg: '创造新纪录！'
+      });
+      // wx.setStorageSync('highScore', this.data.score);
+    } else {
+      this.setData({
+        overMsg: '游戏结束！'
+      });
     }
-
-    // 获胜
-    if (data.win) {
-      data.overMsg = '恭喜';
-    }
-
-    this.setData(data);
   },
+  gameStart: function () {  // 游戏开始
+    let board = new Board(4)
+    for (let i = 0; i < 2; i++) {
+      board.randFillGrid()
+    }
 
-  // 重新开始
+    this.setData({
+      board: board,
+      grids: board.grid,
+      hideLoading: true,
+    })
+
+  },
   restart: function () {
-    this.updateView({
-      grids: this.GameManager.restart(),
+    this.gameStart();
+    this.setData({
       over: false,
-      won: false,
       score: 0
+    })
+  },
+  // 触摸
+  touchStartX: 0,
+  touchStartY: 0,
+  touchEndX: 0,
+  touchEndY: 0,
+  touchStart: function (ev) { // 触摸开始坐标
+    let touch = ev.touches[0];
+    this.touchStartX = touch.clientX;
+    this.touchStartY = touch.clientY;
+
+  },
+  touchMove: function (ev) { // 触摸最后移动时的坐标
+    let touch = ev.touches[0];
+    this.touchEndX = touch.clientX;
+    this.touchEndY = touch.clientY;
+  },
+  touchEnd: function () {
+    let disX = this.touchStartX - this.touchEndX;
+    let absdisX = Math.abs(disX);
+    let disY = this.touchStartY - this.touchEndY;
+    let absdisY = Math.abs(disY);
+
+    if (this.data.score >= 16) {
+      this.gameOver();
+      return
+    }
+
+    if (this.data.board.isOver()) { // 游戏是否结束
+      this.gameOver();
+    } else {
+      if (Math.max(absdisX, absdisY) > 10) { // 确定是否在滑动
+        // this.setData({
+        //   start: "重新开始",
+        // });
+        let direction = absdisX > absdisY ? (disX < 0 ? "l" : "j") : (disY < 0 ? "k" : "i");  // 确定移动方向
+        switch (direction) {
+          case "j": // 左移
+            console.log("direction is 左移")
+            break;
+          case "l": // 右移
+            console.log("direction is 右移")
+            break;
+          case "i": // 上移
+            console.log("direction is 上移")
+            break;
+          case "k": // 下移
+            console.log("direction is 下移")
+            break;
+        }
+
+
+        let data = this.data.board.move(direction);
+
+        console.log("after move data", JSON.stringify(data))
+
+        this.updateView(data);
+      }
+    }
+  },
+  updateView(data) {
+    var max = 0;
+    for (var i = 0; i < this.data.board.size; i++)
+      for (var j = 0; j < this.data.board.size; j++)
+        if (data[i][j] != 0 && data[i][j] > max) {
+          max = data[i][j];
+        }
+
+    this.setData({
+      grids: data,
+      score: max
     });
   },
-
-  touchStartClienX: 0,
-  touchStartClientY: 0,
-  touchEndClientX: 0,
-  touchEndClientY: 0,
-  isMultiple: false, // 多手指操作
-
-  touchStart: function (events) {
-
-    // 多指操作
-    this.isMultiple = events.touches.length > 1;
-    if (this.isMultiple) {
-      return;
-    }
-
-    var touch = events.touches[0];
-
-    this.touchStartClientX = touch.clientX;
-    this.touchStartClientY = touch.clientY;
-
-  },
-
-  touchMove: function (events) {
-    var touch = events.touches[0];
-    this.touchEndClientX = touch.clientX;
-    this.touchEndClientY = touch.clientY;
-  },
-
-  touchEnd: function (events) {
-    if (this.isMultiple) {
-      return;
-    }
-
-    var dx = this.touchEndClientX - this.touchStartClientX;
-    var absDx = Math.abs(dx);
-    var dy = this.touchEndClientY - this.touchStartClientY;
-    var absDy = Math.abs(dy);
-
-    if (Math.max(absDx, absDy) > 10) {
-      var direction = absDx > absDy ? (dx > 0 ? 1 : 3) : (dy > 0 ? 2 : 0);
-
-      var data = this.GameManager.move(direction) || {
-        grids: this.data.grids,
-        over: this.data.over,
-        won: this.data.won,
-        score: this.data.score
-      };
-
-      var highscore = wx.getStorageSync('highscore') || 0;
-      if (data.score > highscore) {
-        wx.setStorageSync('highscore', data.score);
-      }
-
-      this.updateView({
-        grids: data.grids,
-        over: data.over,
-        won: data.won,
-        score: data.score,
-        highscore: Math.max(highscore, data.score)
-      });
-
-    }
-
-  }
 };
 
 Page(config);
