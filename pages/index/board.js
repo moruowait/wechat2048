@@ -111,7 +111,6 @@ class Board {
             }
         }
 
-        console.log("move before ", JSON.stringify(grid))
         var list = [[], [], [], []]
 
         for (var i = 0; i < this.size; i++) {
@@ -159,7 +158,6 @@ class Board {
                 }
             }
         }
-        // this.randFillGrid()
         // 如果移动完没有变化，则不添加随机值
         if (this.different(grid)) {
             // 重新添加一个随机值
@@ -167,7 +165,6 @@ class Board {
         }
         // 打印
         this.prettyPrint()
-        console.log("this.grid", JSON.stringify(this.grid))
         return this.grid
     }
 }
