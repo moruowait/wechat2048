@@ -9,7 +9,7 @@ class Board {
         for (let i = 0; i < this.size; i++) {
             grid[i] = []
             for (let j = 0; j < this.size; j++) {
-                gird[i].push(0)
+                grid[i].push(0)
             }
         }
         return grid
@@ -26,21 +26,23 @@ class Board {
                 }
             }
         }
+        return grids
     }
     randSelectEmptyGrid() { // 随机找到一个空格子
         let grids = this.emptyGrids();
         if (grids.length == 0) {
-            return grids[Math.floor(Math.random * grids.length)];
+            return
         }
+        return grids[Math.floor(Math.random() * grids.length)];
     }
     isBoardFull() { // 判断棋盘是否已满
-        return !this.emptyGrids.length;
+        return !this.emptyGrids().length;
     }
     updateGrid(row, column, value) { // 更新格子
-        b.grid[row][column] = value;
+        this.grid[row][column] = value;
     }
     randValue() { // 生成随机值
-        return Math.random < 0.8 ? 2 : 4;
+        return Math.random() < 0.8 ? 2 : 4;
     }
     randFillGrid() { // 随机填充格子
         if (this.isBoardFull()) {
@@ -51,12 +53,12 @@ class Board {
     }
     tostring() {
         let str = ""
-        for (i = 0; i < b.size; i++) {
-            for (j = 0; j < b.size; j++) {
+        for (let i = 0; i < this.size; i++) {
+            for (let j = 0; j < this.size; j++) {
                 if (this.grid[i][j] == 0) {
                     str += "_ "
                 } else {
-                    str += "{0} ".format(this.grid[i][j])
+                    str += this.grid[i][j] + " "
                 }
             }
             str += "\n"
@@ -65,63 +67,109 @@ class Board {
         return str
     }
     prettyPrint() { // 打印
-        console.log(this.Board.tostring())
+        console.log(this.tostring())
     }
     moveClose(list) { // 将 [2,0,0,2] 移动为 [2,2,0,0]
-        for (i = 0; i < b.size; i++) {
-            let cnt = 0
-            for (j = 0; j < b.size; j++) {
-                if (this.grid[i][j] == 0) {
-                    continue
-                }
-                list[i][cnt] = this.grid[i][j]
-                cnt++
+        var cnt = 0;
+        for (let i = 0; i < list.length; i++) {
+            if (list[i] != 0) {
+                list[cnt++] = list[i];
             }
-            for (j = cnt; j < b.size; j++) {
-                list[i][j] = 0;
+        }
+        for (let i = cnt; i < list.length; i++) {
+            list[i] = 0;
+        }
+        return list
+    }
+    combine(list) { // 合并数字
+        for (var i = 0; i < this.size; i++) {
+            for (var j = 0; j < this.size - 1; j++) {
+                // // 如果相等，且不为 0
+                if (list[i][j + 1] == list[i][j] && list[i][j] != 0) {
+                    list[i][j] = list[i][j] + list[i][j + 1]
+                    list[i][j + 1] = 0
+                }
             }
         }
         return list
     }
-    conbine(list) { // 合并数字
-        for (i = 0; i < b.size; i++) {
-            for (j = 1; j < b.size; j++) {
-                // 如果相等，且不为 0
-                if (list[i][j - 1] == list[i][j] && list[i][j] != 0) {
-                    list[i][j - 1] += list[i][j]
-                    list[i][j] = 0
+    different(list) {
+        for (let i = 0; i < this.size; i++) {
+            for (let j = 0; j < this.size; j++) {
+                if (list[i][j] != this.grid[i][j]) {
+                    return true
                 }
             }
         }
-        return
+        return false
     }
     move(dir) {
-        let grid = this.grid
-        let list = []
-
-
-    }
-    isOver() { // 游戏是否结束：可用格子为空且所有格子上下左右值不等
-        // 如果有空余格子
-        if (!this.isBoardFull()) {
-            return false
+        var grid = [[], [], [], []]
+        for (var i = 0; i < this.size; i++) {
+            for (var j = 0; j < this.size; j++) {
+                grid[i][j] = this.grid[i][j]
+            }
         }
-        // 左右不等
-        for (i = 0; i < b.size; i++) {
-            for (j = 1; j < b.size; j++) {
-                if (this.grid[i][j - 1] == this.grid[i][j]) {
-                    return false
+
+        console.log("move before ", JSON.stringify(grid))
+        var list = [[], [], [], []]
+
+        for (var i = 0; i < this.size; i++) {
+            for (var j = 0; j < this.size; j++) {
+                switch (dir) {
+                    case "j": // 左移
+                        list[i].push(this.grid[i][j])
+                        break;
+                    case "l": // 右移
+                        list[i].push(this.grid[i][this.size - j - 1])
+                        break;
+                    case "i": // 上移
+                        list[j].push(this.grid[i][j])
+                        break;
+                    case "k": // 下移
+                        list[j].push(this.grid[this.size - i - 1][j])
+                        break;
                 }
             }
         }
-        // 上下不等
-        for (j = 0; j < b.Size; j++) {
-            for (i = 1; i < b.Size; i++) {
-                if (this.Grids[i][j] == this.Grids[i - 1][j]) {
-                    return false
+
+        for (var i = 0; i < list.length; i++)  // 数字靠边
+            list[i] = this.moveClose(list[i]);
+
+        this.combine(list)
+
+        for (var i = 0; i < list.length; i++)  // 再次数字靠边
+            list[i] = this.moveClose(list[i]);
+
+        for (var i = 0; i < this.size; i++) {
+            for (var j = 0; j < this.size; j++) {
+                switch (dir) {
+                    case "j": // 左移
+                        this.grid[i][j] = list[i][j]
+                        break;
+                    case "l": // 右移
+                        this.grid[i][this.size - j - 1] = list[i][j]
+                        break;
+                    case "i": // 上移
+                        this.grid[i][j] = list[j][i]
+                        break;
+                    case "k": // 下移
+                        this.grid[this.size - i - 1][j] = list[j][i]
+                        break;
                 }
             }
         }
-        return true
+        // this.randFillGrid()
+        // 如果移动完没有变化，则不添加随机值
+        if (this.different(grid)) {
+            // 重新添加一个随机值
+            this.randFillGrid()
+        }
+        // 打印
+        this.prettyPrint()
+        console.log("this.grid", JSON.stringify(this.grid))
+        return this.grid
     }
 }
+
+module.exports = Board;
