@@ -29,7 +29,7 @@ let config = {
     this.setData({
       over: true
     });
-    if (this.data.score >= 16) {
+    if (this.data.score >= 2048) {
       this.setData({
         overMsg: '恭喜达到2048！'
       });
@@ -50,7 +50,7 @@ let config = {
     for (let i = 0; i < 2; i++) {
       board.randFillGrid()
     }
-
+    // board.testFullGrid()
     this.setData({
       board: board,
       grids: board.grid,
@@ -87,7 +87,7 @@ let config = {
     let disY = this.touchStartY - this.touchEndY;
     let absdisY = Math.abs(disY);
 
-    if (this.data.score >= 16) {
+    if (this.data.score >=2048) {
       this.gameOver();
       return
     }

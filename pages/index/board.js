@@ -51,6 +51,9 @@ class Board {
         let grid = this.randSelectEmptyGrid()
         this.updateGrid(grid.row, grid.column, this.randValue())
     }
+    testFullGrid() {
+        this.grid = [[2,4,8,16],[32,64,128,256],[2,4,8,16],[32,64,128,256]]
+    }
     tostring() {
         let str = ""
         for (let i = 0; i < this.size; i++) {
@@ -110,17 +113,17 @@ class Board {
         }
         // 如果没有空余的格子
         // 左右不等
-        for (let i = 0; i < this.size; i++) {
-            for (j = 1; j < this.size; j++) {
-                if (this.grids[i][j] == this.grids[i][j - 1]) {
+        for (var i = 0; i < this.size; i++) {
+            for (var j = 1; j < this.size; j++) {
+                if (this.grid[i][j] == this.grid[i][j - 1]) {
                     return false
                 }
             }
         }
         // 上下不相等
-        for (let j = 0; j < this.size; j++) {
-            for (let i = 1; i < this.size; i++) {
-                if (this.grids[i][j] == this.grids[i - 1][j]) {
+        for (var j = 0; j < this.size; j++) {
+            for (var i = 1; i < this.size; i++) {
+                if (this.grid[i][j] == this.grid[i - 1][j]) {
                     return false
                 }
             }
