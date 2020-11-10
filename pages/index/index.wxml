@@ -2,15 +2,15 @@
 	<view class="game-body">
 		<loading hidden="{{hideLoading}}">加载中...</loading>
 		<view class="heading">
-			<text class="title">2048</text>
+			<text class="title">4096</text>
 			<view class="scores-container">
 				<view class="score-container">{{score}}</view>
-				<view class="best-container">{{highscore}}</view>
+				<view class="best-container">{{score}}</view>
 			</view>
 		</view>
 		<view class="above-game">
-			<text class="game-intro">你能拿到2048吗？</text>
-			<text class="restart-button" bindtap="restart">新游戏</text>
+			<text class="game-intro">你能拿到4096吗？</text>
+			<text class="restart-button" bindtap="restart">重新开始</text>
 		</view>
 		<view class="game-container">
 			<view class="game-message game-{{over ? (win ? 'won' : 'over') : ''}}">
